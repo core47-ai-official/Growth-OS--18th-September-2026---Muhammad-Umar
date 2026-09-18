@@ -1,0 +1,764 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 210 29% 97%;
+    --foreground: 216 32% 14%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 28% 17%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 215 78% 48%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 210 24% 96%;
+    --secondary-foreground: 215 28% 17%;
+
+    --muted: 210 24% 96%;
+    --muted-foreground: 215 13% 43%;
+
+    --accent: 214 36% 95%;
+    --accent-foreground: 215 28% 17%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214 25% 90%;
+    --input: 214 24% 86%;
+    --ring: 215 78% 48%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 20% 31%;
+    --sidebar-primary: 215 78% 48%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 210 28% 94%;
+    --sidebar-accent-foreground: 215 28% 17%;
+    --sidebar-border: 214 25% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Extended semantic tokens */
+    --success: 160 84% 32%;
+    --success-foreground: 0 0% 98%;
+    --warning: 45 93% 47%;
+    --warning-foreground: 0 0% 10%;
+  }
+
+  .dark {
+    --background: 222 47% 8%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 38% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 36% 12%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 218 28% 17%;
+    --muted-foreground: 214 22% 72%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 25% 23%;
+    --input: 217 25% 25%;
+    --ring: 217 91% 60%;
+    
+    --sidebar-background: 222 34% 11%;
+    --sidebar-foreground: 214 25% 78%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 217 25% 23%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Extended semantic tokens (dark) */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+    --warning: 45 93% 47%;
+    --warning-foreground: 0 0% 10%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+    letter-spacing: 0;
+    min-width: 320px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans;
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
+
+  /* Enhanced focus styles for accessibility */
+  *:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  /* Improved button focus styles */
+  button:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+}
+
+/* Enhanced design tokens using semantic colors */
+:root {
+  /* Gradient tokens using semantic colors */
+  --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+  --gradient-success: linear-gradient(135deg, hsl(217 91% 60%), hsl(142 76% 36%));
+  --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(224 71% 52%), hsl(142 76% 36%));
+  --gradient-card: linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)));
+  
+  /* Metric gradients and tints */
+  --gradient-metric-blue: linear-gradient(135deg, hsl(var(--primary)), hsl(224 71% 52%));
+  --gradient-metric-green: linear-gradient(135deg, hsl(var(--success)), hsl(162 72% 44%));
+  --gradient-metric-amber: linear-gradient(135deg, hsl(var(--warning)), hsl(35 92% 60%));
+  --gradient-metric-pink: linear-gradient(135deg, hsl(330 81% 60%), hsl(281 77% 60%));
+
+  --metric-fill-blue: linear-gradient(180deg, hsl(217 91% 60% / 0.08), transparent);
+  --metric-fill-green: linear-gradient(180deg, hsl(142 76% 36% / 0.08), transparent);
+  --metric-fill-amber: linear-gradient(180deg, hsl(45 93% 47% / 0.08), transparent);
+  --metric-fill-pink: linear-gradient(180deg, hsl(330 81% 60% / 0.08), transparent);
+  
+  /* Enhanced shadow tokens */
+  --shadow-soft: 0 1px 2px hsl(var(--foreground) / 0.035);
+  --shadow-medium: 0 10px 28px -20px hsl(var(--foreground) / 0.2);
+  --shadow-elevated: 0 24px 56px -30px hsl(var(--foreground) / 0.28);
+  
+  /* Focus ring tokens */
+  --focus-ring: 0 0 0 2px hsl(var(--ring));
+  --focus-ring-offset: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring));
+}
+
+.dark {
+  --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+  --gradient-success: linear-gradient(135deg, hsl(217 91% 60%), hsl(142 76% 36%));
+  --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(224 71% 52%), hsl(142 76% 36%));
+  --gradient-card: linear-gradient(135deg, hsl(var(--card)), hsl(var(--muted)));
+
+  /* Metric gradients (dark) */
+  --gradient-metric-blue: linear-gradient(135deg, hsl(var(--primary)), hsl(224 71% 52%));
+  --gradient-metric-green: linear-gradient(135deg, hsl(var(--success)), hsl(162 72% 44%));
+  --gradient-metric-amber: linear-gradient(135deg, hsl(var(--warning)), hsl(35 92% 60%));
+  --gradient-metric-pink: linear-gradient(135deg, hsl(330 81% 60%), hsl(281 77% 60%));
+
+  --metric-fill-blue: linear-gradient(180deg, hsl(217 91% 60% / 0.12), transparent);
+  --metric-fill-green: linear-gradient(180deg, hsl(142 76% 36% / 0.12), transparent);
+  --metric-fill-amber: linear-gradient(180deg, hsl(45 93% 47% / 0.12), transparent);
+  --metric-fill-pink: linear-gradient(180deg, hsl(330 81% 60% / 0.12), transparent);
+}
+
+/* Enhanced scrollbar using semantic tokens */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Enhanced interactive elements */
+.hover-scale {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-scale:hover {
+  transform: translateY(-1px);
+}
+
+.hover-lift {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-elevated);
+}
+
+/* Calm workspace rhythm shared by every authenticated view */
+.app-shell {
+  background: hsl(var(--background));
+}
+
+.app-header {
+  background: hsl(var(--card) / 0.92);
+  box-shadow: 0 1px 0 hsl(var(--border));
+  backdrop-filter: blur(14px);
+}
+
+.app-sidebar {
+  background: hsl(var(--sidebar-background));
+  border-right: 1px solid hsl(var(--sidebar-border));
+  box-shadow: none;
+}
+
+.app-navigation a,
+.app-navigation button {
+  letter-spacing: 0;
+  min-height: 2.5rem;
+}
+
+.app-content {
+  isolation: isolate;
+}
+
+.app-content > div {
+  min-height: calc(100vh - 7rem);
+}
+
+.app-content :where(.container) {
+  max-width: none;
+}
+
+.app-content :where(.space-y-8) {
+  row-gap: 1.5rem;
+}
+
+.app-content :where(.gap-6) {
+  gap: 1rem;
+}
+
+.app-content :where(h1) {
+  font-size: clamp(1.5rem, 2vw, 1.875rem);
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.app-content :where(h2) {
+  font-size: clamp(1.125rem, 1.5vw, 1.375rem);
+  font-weight: 600;
+}
+
+.app-content :where(h1 + p) {
+  margin-top: 0.375rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.9375rem;
+}
+
+.app-content :where([class*="border-l-4"]) {
+  border-left-width: 1px !important;
+  border-left-color: hsl(var(--border)) !important;
+}
+
+.app-content :where(.hover\:shadow-lg:hover, .hover\:shadow-md:hover) {
+  box-shadow: var(--shadow-medium) !important;
+}
+
+.app-content :where([class*="bg-gradient-to-br"]) {
+  background-image: none !important;
+  background-color: hsl(var(--card)) !important;
+}
+
+.app-content :where([class*="bg-gradient-to-r"][class*="bg-clip-text"]) {
+  background-image: none !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.dashboard-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem;
+}
+
+.dashboard-metric {
+  cursor: pointer;
+  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+.dashboard-metric:hover {
+  border-color: hsl(var(--primary) / 0.3);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-1px);
+}
+
+.dashboard-metric :where(h3) {
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.dashboard-metric :where(.text-3xl, .text-2xl) {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Structured IDM workspace for admin and superadmin roles */
+.admin-workspace {
+  --background: 213 54% 98%;
+  --foreground: 218 40% 14%;
+  --primary: 214 80% 48%;
+  --success: 148 79% 37%;
+  --accent: 214 70% 95%;
+  --border: 214 28% 89%;
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 218 24% 28%;
+  --sidebar-accent: 214 70% 96%;
+  --sidebar-accent-foreground: 214 80% 42%;
+  --sidebar-border: 214 28% 89%;
+}
+
+/* Admin role tokens must follow dark mode instead of overriding it. */
+.dark .admin-workspace {
+  --background: 222 47% 8%;
+  --foreground: 210 40% 98%;
+  --card: 222 38% 11%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222 36% 12%;
+  --popover-foreground: 210 40% 98%;
+  --muted: 218 28% 17%;
+  --muted-foreground: 214 22% 72%;
+  --accent: 216 30% 18%;
+  --accent-foreground: 210 40% 98%;
+  --border: 217 25% 23%;
+  --input: 217 25% 25%;
+  --sidebar-background: 222 34% 11%;
+  --sidebar-foreground: 214 25% 78%;
+  --sidebar-accent: 216 30% 18%;
+  --sidebar-accent-foreground: 210 40% 98%;
+  --sidebar-border: 217 25% 23%;
+}
+
+/* Keep legacy light-only utility colors readable throughout the dark workspace. */
+.dark .app-shell :where(.bg-white) {
+  background-color: hsl(var(--card)) !important;
+}
+
+.dark .app-shell :where(.bg-gray-50, .bg-slate-50, .bg-blue-50, .bg-green-50, .bg-red-50, .bg-yellow-50, .bg-amber-50, .bg-orange-50, .bg-indigo-50, .bg-cyan-50, .bg-emerald-50) {
+  background-color: hsl(var(--muted)) !important;
+}
+
+.dark .app-shell :where(.text-gray-700, .text-gray-800, .text-gray-900, .text-slate-700, .text-slate-800, .text-slate-900, .text-blue-800, .text-blue-900, .text-green-800, .text-green-900, .text-red-800, .text-red-900, .text-yellow-800, .text-yellow-900, .text-amber-800, .text-amber-900, .text-orange-800, .text-orange-900, .text-indigo-800, .text-indigo-900, .text-cyan-800, .text-cyan-900, .text-emerald-800, .text-emerald-900) {
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .app-shell :where(input, textarea, select) {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--input));
+}
+
+.dark .app-shell :where(input, textarea)::placeholder {
+  color: hsl(var(--muted-foreground));
+  opacity: 1;
+}
+
+.admin-workspace .app-header {
+  background: hsl(var(--card) / 0.97);
+  backdrop-filter: blur(10px);
+}
+
+.admin-workspace .app-sidebar {
+  background: hsl(var(--sidebar-background));
+  border-right-color: hsl(var(--sidebar-border));
+}
+
+.admin-workspace .app-sidebar .app-navigation :where(a, button) {
+  color: hsl(var(--sidebar-foreground));
+}
+
+.admin-workspace .app-sidebar .app-navigation :where(a, button):hover {
+  background: hsl(var(--sidebar-accent));
+  color: hsl(var(--sidebar-accent-foreground));
+}
+
+.admin-workspace .app-sidebar .app-navigation :where(a.bg-primary\/10, a.text-primary) {
+  background: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+}
+
+.admin-workspace .app-sidebar .app-navigation :where(a.bg-primary\/10, a.text-primary) svg {
+  color: hsl(var(--primary));
+}
+
+.admin-workspace .app-content > div {
+  max-width: none;
+}
+
+.admin-workspace .page-heading,
+.admin-workspace .management-heading {
+  align-items: center;
+  min-height: 4rem;
+  padding: 0 0 1rem;
+}
+
+.admin-workspace .management-panel {
+  border-color: hsl(var(--border));
+  box-shadow: var(--shadow-soft);
+}
+
+.admin-workspace .management-toolbar {
+  background: hsl(var(--muted) / 0.52);
+}
+
+.admin-workspace .data-table {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Tables that are the primary card content should meet both panel edges. */
+.admin-workspace [data-slot="card-content"]:has(> .data-table) {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.admin-workspace .data-table table {
+  table-layout: fixed;
+}
+
+.admin-workspace .data-table thead th {
+  background: hsl(var(--muted) / 0.72);
+  color: hsl(var(--muted-foreground));
+  white-space: nowrap;
+}
+
+.admin-workspace .data-table tbody tr {
+  min-height: 3.5rem;
+}
+
+.admin-workspace .data-table tbody tr:hover {
+  background: hsl(var(--primary) / 0.035);
+}
+
+.admin-workspace .data-table td:last-child,
+.admin-workspace .data-table th:last-child {
+  padding-right: 1.5rem;
+}
+
+.admin-workspace .dashboard-metric {
+  position: relative;
+  overflow: hidden;
+  min-height: 7.5rem;
+}
+
+.admin-workspace .dashboard-metric::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: hsl(var(--primary));
+  content: "";
+}
+
+.admin-workspace .dashboard-metric:nth-child(even)::before {
+  background: hsl(var(--success));
+}
+
+.admin-workspace .dashboard-metric :where(.text-red-600, .text-purple-600, .text-orange-600, .text-blue-600, .text-indigo-600, .text-cyan-600, .text-yellow-600, .text-emerald-600) {
+  color: hsl(var(--primary)) !important;
+}
+
+@media (max-width: 768px) {
+  .admin-workspace .management-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-workspace .management-heading > *:last-child {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .app-content :where(.gap-6) {
+    gap: 0.875rem;
+  }
+}
+
+.app-content :where(.rounded-xl, .rounded-2xl, .rounded-3xl) {
+  border-radius: var(--radius);
+}
+
+.app-content :where(.shadow-xl, .shadow-2xl) {
+  box-shadow: var(--shadow-medium);
+}
+
+/* Enhanced animations */
+.animate-slide-up {
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-shake {
+  animation: shake 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+/* Utility classes using design tokens */
+.gradient-primary {
+  background: var(--gradient-primary);
+}
+
+.gradient-hero {
+  background: var(--gradient-hero);
+}
+
+.gradient-success {
+  background: var(--gradient-success);
+}
+
+.shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+.shadow-medium {
+  box-shadow: var(--shadow-medium);
+}
+
+.shadow-elevated {
+  box-shadow: var(--shadow-elevated);
+}
+
+/* Metric card utility (eye-friendly pastel gradients) */
+.metric-card {
+  position: relative;
+  overflow: hidden;
+}
+.metric-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: var(--metric-gradient, var(--gradient-primary));
+  border-top-left-radius: var(--radius);
+  border-bottom-left-radius: var(--radius);
+}
+.metric-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--metric-fill, var(--gradient-card));
+  pointer-events: none;
+}
+.metric-card .metric-icon {
+  color: hsl(var(--foreground) / 0.7);
+}
+.metric-blue { --metric-gradient: var(--gradient-metric-blue); --metric-fill: var(--metric-fill-blue); }
+.metric-green { --metric-gradient: var(--gradient-metric-green); --metric-fill: var(--metric-fill-green); }
+.metric-amber { --metric-gradient: var(--gradient-metric-amber); --metric-fill: var(--metric-fill-amber); }
+.metric-pink { --metric-gradient: var(--gradient-metric-pink); --metric-fill: var(--metric-fill-pink); }
+/* Wizard specific styles */
+.wizard-card {
+  @apply w-full mx-auto shadow-lg border;
+}
+
+.wizard-nav {
+  @apply flex items-center justify-between;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .wizard-card {
+    @apply shadow-none border-0 rounded-none m-0 min-h-screen;
+  }
+  
+  .wizard-nav {
+    @apply flex-col gap-3;
+  }
+  
+  .wizard-nav > button {
+    @apply w-full;
+  }
+}
+
+/* Custom scrollbar utilities */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted-foreground) / 0.2);
+  border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--muted-foreground) / 0.4);
+}
+
+.scrollbar-track-transparent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thumb-muted-foreground\/20::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted-foreground) / 0.2);
+}
+
+.hover\:scrollbar-thumb-muted-foreground\/40:hover::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted-foreground) / 0.4);
+}
+
+/* Hide scrollbar while maintaining scroll functionality */
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari, Opera */
+}
+
+/* Accessibility and animation preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Dialog readability & scrolling (global) ---------- */
+[role="dialog"] {
+  scrollbar-width: thin !important;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+[role="dialog"] *,
+[role="dialog"] {
+  -ms-overflow-style: auto !important;
+}
+[role="dialog"] ::-webkit-scrollbar,
+[role="dialog"]::-webkit-scrollbar {
+  display: block !important;
+  width: 8px;
+  height: 8px;
+}
+[role="dialog"] ::-webkit-scrollbar-thumb,
+[role="dialog"]::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--border));
+  border-radius: 9999px;
+}
+[role="dialog"] ::-webkit-scrollbar-track,
+[role="dialog"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Breathing room inside dense dialogs */
+[role="dialog"] .space-y-1 > * + * { margin-top: 0.375rem; }
+[role="dialog"] .space-y-2 > * + * { margin-top: 0.625rem; }
+[role="dialog"] .space-y-3 > * + * { margin-top: 0.875rem; }
+[role="dialog"] .space-y-4 > * + * { margin-top: 1.125rem; }
+[role="dialog"] .gap-2 { gap: 0.625rem; }
+[role="dialog"] .gap-3 { gap: 0.875rem; }
+[role="dialog"] label { line-height: 1.35; }
+[role="dialog"] .grid.grid-cols-2 { column-gap: 1rem; }
