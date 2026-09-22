@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle, ArrowLeft, Play, Lock, ArrowRight, Star } from "lucide-react";
+import { CheckCircle, ArrowLeft, Play, Lock, ArrowRight, Star, Maximize, Minimize } from "lucide-react";
 import { useCourseRecordings } from "@/hooks/useCourseRecordings";
 import { LectureRating } from "@/components/LectureRating";
 import { supabase } from "@/integrations/supabase/client";
@@ -90,25 +90,53 @@ const VideoPlayer = () => {
   });
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Keep the identity watermark visible in fullscreen: Bunny's player puts the
-  // iframe itself fullscreen, which would hide sibling overlays. When the
-  // student uses the player's own fullscreen control, we redirect fullscreen to
-  // the wrapper so the watermark stays on screen.
+  // Let embedded players enter fullscreen directly. Redirecting iframe
+  // fullscreen to the wrapper breaks mobile browsers because the second
+  // request no longer has an active user gesture.
   useEffect(() => {
     const onFsChange = () => {
-      const fsEl = document.fullscreenElement;
+      const fsEl = document.fullscreenElement || (document as any).webkitFullscreenElement;
       const container = playerContainerRef.current;
-      if (fsEl && container && fsEl === iframeRef.current) {
-        document.exitFullscreen()
-          .then(() => container.requestFullscreen())
-          .catch(() => { /* fullscreen redirect not permitted */ });
-        return;
-      }
-      setIsFullscreen(!!fsEl && fsEl === container);
+      const iframe = iframeRef.current;
+      setIsFullscreen(Boolean(fsEl && (fsEl === container || fsEl === iframe)));
     };
     document.addEventListener('fullscreenchange', onFsChange);
-    return () => document.removeEventListener('fullscreenchange', onFsChange);
+    document.addEventListener('webkitfullscreenchange', onFsChange as EventListener);
+    return () => {
+      document.removeEventListener('fullscreenchange', onFsChange);
+      document.removeEventListener('webkitfullscreenchange', onFsChange as EventListener);
+    };
   }, []);
+
+  // Bunny Stream's own fullscreen button can be blocked inside nested frames,
+  // so we drive the browser fullscreen API ourselves on a real user gesture.
+  const toggleFullscreen = async () => {
+    const fsEl = document.fullscreenElement || (document as any).webkitFullscreenElement;
+    if (fsEl) {
+      try {
+        if (document.exitFullscreen) await document.exitFullscreen();
+        else (document as any).webkitExitFullscreen?.();
+      } catch (e) {
+        logger.error('Failed to exit fullscreen', e);
+      }
+      return;
+    }
+
+    const container = playerContainerRef.current;
+    const iframe = iframeRef.current;
+    const targets = [container, iframe].filter(Boolean) as HTMLElement[];
+
+    for (const el of targets) {
+      const request = el.requestFullscreen || (el as any).webkitRequestFullscreen;
+      if (!request) continue;
+      try {
+        await request.call(el, { navigationUI: 'hide' } as FullscreenOptions);
+        return;
+      } catch (e) {
+        logger.error('Fullscreen request failed', e);
+      }
+    }
+  };
 
   interface Attachment {
     id: string;
@@ -540,7 +568,7 @@ const VideoPlayer = () => {
             <CardContent className="p-0">
               <div
                 ref={playerContainerRef}
-                className={`bg-gray-900 relative ${isFullscreen ? 'w-screen h-screen flex items-center justify-center' : 'aspect-video rounded-t-lg'}`}
+                className={`bg-gray-900 relative ${isFullscreen ? 'fixed inset-0 z-50 w-screen h-screen flex items-center justify-center' : 'aspect-video rounded-t-lg'}`}
               >
                 {videoUrlError ? (
                   <div className="w-full h-full flex items-center justify-center bg-muted rounded-t-lg">
@@ -555,12 +583,20 @@ const VideoPlayer = () => {
                       key={`video-${currentVideo.id}`}
                       ref={iframeRef}
                       className={`w-full h-full ${isFullscreen ? '' : 'rounded-t-lg'}`}
-                      allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture" 
+                      allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen" 
                       allowFullScreen 
                       title={currentVideo.title}
                       frameBorder="0"
                     />
                     <VideoWatermark />
+                    <button
+                      type="button"
+                      onClick={toggleFullscreen}
+                      aria-label={isFullscreen ? 'Exit fullscreen' : 'Play fullscreen'}
+                      className="absolute bottom-3 right-3 z-30 rounded-md bg-black/60 p-2 text-white backdrop-blur-sm transition hover:bg-black/80"
+                    >
+                      {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
+                    </button>
                   </>
                 )}
               </div>
