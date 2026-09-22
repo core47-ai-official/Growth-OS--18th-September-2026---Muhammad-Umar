@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle, ArrowLeft, Play, Lock, ArrowRight, Star, Maximize, Minimize } from "lucide-react";
+import { CheckCircle, ArrowLeft, Play, Lock, ArrowRight, Star } from "lucide-react";
 import { useCourseRecordings } from "@/hooks/useCourseRecordings";
 import { LectureRating } from "@/components/LectureRating";
 import { supabase } from "@/integrations/supabase/client";
@@ -88,55 +88,19 @@ const VideoPlayer = () => {
     videoId: currentVideo?.id ?? null,
     enabled: !!currentVideo?.id,
   });
-  const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Let embedded players enter fullscreen directly. Redirecting iframe
-  // fullscreen to the wrapper breaks mobile browsers because the second
-  // request no longer has an active user gesture.
-  useEffect(() => {
-    const onFsChange = () => {
-      const fsEl = document.fullscreenElement || (document as any).webkitFullscreenElement;
-      const container = playerContainerRef.current;
-      const iframe = iframeRef.current;
-      setIsFullscreen(Boolean(fsEl && (fsEl === container || fsEl === iframe)));
-    };
-    document.addEventListener('fullscreenchange', onFsChange);
-    document.addEventListener('webkitfullscreenchange', onFsChange as EventListener);
-    return () => {
-      document.removeEventListener('fullscreenchange', onFsChange);
-      document.removeEventListener('webkitfullscreenchange', onFsChange as EventListener);
-    };
-  }, []);
+  // Back target: return to the same course/pathway lessons page the user came from
+  const backTarget = (() => {
+    const courseId = searchParams.get('courseId') || currentVideo?.courseId || null;
+    const pathwayId = searchParams.get('pathwayId');
+    const params = new URLSearchParams();
+    if (pathwayId) params.set('pathwayId', pathwayId);
+    else if (courseId) params.set('courseId', courseId);
+    if (currentVideo?.id) params.set('recordingId', currentVideo.id);
+    const qs = params.toString();
+    return qs ? `/videos?${qs}` : '/videos';
+  })();
 
-  // Bunny Stream's own fullscreen button can be blocked inside nested frames,
-  // so we drive the browser fullscreen API ourselves on a real user gesture.
-  const toggleFullscreen = async () => {
-    const fsEl = document.fullscreenElement || (document as any).webkitFullscreenElement;
-    if (fsEl) {
-      try {
-        if (document.exitFullscreen) await document.exitFullscreen();
-        else (document as any).webkitExitFullscreen?.();
-      } catch (e) {
-        logger.error('Failed to exit fullscreen', e);
-      }
-      return;
-    }
-
-    const container = playerContainerRef.current;
-    const iframe = iframeRef.current;
-    const targets = [container, iframe].filter(Boolean) as HTMLElement[];
-
-    for (const el of targets) {
-      const request = el.requestFullscreen || (el as any).webkitRequestFullscreen;
-      if (!request) continue;
-      try {
-        await request.call(el, { navigationUI: 'hide' } as FullscreenOptions);
-        return;
-      } catch (e) {
-        logger.error('Fullscreen request failed', e);
-      }
-    }
-  };
 
   interface Attachment {
     id: string;
@@ -546,7 +510,7 @@ const VideoPlayer = () => {
   };
   return <div>
       <div className="flex items-center gap-3 mb-4">
-        <Button variant="outline" size="sm" onClick={() => navigate('/videos')} className="flex items-center gap-2">
+        <Button variant="outline" size="sm" onClick={() => navigate(backTarget)} className="flex items-center gap-2">
           <ArrowLeft className="w-4 h-4" />
           Back to Videos
         </Button>
@@ -566,10 +530,7 @@ const VideoPlayer = () => {
         <div className="lg:col-span-3 space-y-6">
           <Card>
             <CardContent className="p-0">
-              <div
-                ref={playerContainerRef}
-                className={`bg-gray-900 relative ${isFullscreen ? 'fixed inset-0 z-50 w-screen h-screen flex items-center justify-center' : 'aspect-video rounded-t-lg'}`}
-              >
+              <div ref={playerContainerRef} className="bg-gray-900 relative aspect-video rounded-t-lg">
                 {videoUrlError ? (
                   <div className="w-full h-full flex items-center justify-center bg-muted rounded-t-lg">
                     <div className="text-center p-6">
@@ -582,24 +543,17 @@ const VideoPlayer = () => {
                     <iframe 
                       key={`video-${currentVideo.id}`}
                       ref={iframeRef}
-                      className={`w-full h-full ${isFullscreen ? '' : 'rounded-t-lg'}`}
-                      allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen" 
+                      className="w-full h-full rounded-t-lg"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" 
                       allowFullScreen 
                       title={currentVideo.title}
                       frameBorder="0"
                     />
                     <VideoWatermark />
-                    <button
-                      type="button"
-                      onClick={toggleFullscreen}
-                      aria-label={isFullscreen ? 'Exit fullscreen' : 'Play fullscreen'}
-                      className="absolute bottom-3 right-3 z-30 rounded-md bg-black/60 p-2 text-white backdrop-blur-sm transition hover:bg-black/80"
-                    >
-                      {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
-                    </button>
                   </>
                 )}
               </div>
+
               <div className="p-6">
                 <h2 className="text-2xl font-bold mb-2">{currentVideo?.title}</h2>
                 <h3 className="font-semibold mb-2 text-base">Description</h3>
@@ -683,9 +637,15 @@ const VideoPlayer = () => {
                         <Button
                           size="sm"
                           variant="default"
-                          onClick={() =>
-                            navigate(`/video-player?id=${next.id}&title=${encodeURIComponent(next.recording_title || '')}`)
-                          }
+                          onClick={() => {
+                            const p = new URLSearchParams({ id: next.id, title: next.recording_title || '' });
+                            const ctxPathway = searchParams.get('pathwayId');
+                            const ctxCourse = searchParams.get('courseId') || currentVideo?.courseId;
+                            if (ctxPathway) p.set('pathwayId', ctxPathway);
+                            else if (ctxCourse) p.set('courseId', ctxCourse);
+                            navigate(`/video-player?${p.toString()}`);
+                          }}
+
                         >
                           Next Lesson
                           <ArrowRight className="w-4 h-4 ml-2" />
