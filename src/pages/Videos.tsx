@@ -176,8 +176,13 @@ const Videos = () => {
     if (userLMSStatus !== "active") return;
     if (!recording.isUnlocked || !recording.recording_url) return;
     await markRecordingWatched(recording.id);
-    navigate(`/video-player?id=${recording.id}&title=${encodeURIComponent(recording.title || "")}`);
+    const params = new URLSearchParams({ id: recording.id, title: recording.title || "" });
+    if (forcedPathwayId) params.set("pathwayId", forcedPathwayId);
+    else if (forcedCourseId) params.set("courseId", forcedCourseId);
+    else if (activeCourseId) params.set("courseId", activeCourseId);
+    navigate(`/video-player?${params.toString()}`);
   };
+
 
   const toggleModule = (moduleId: string) => {
     setExpandedModules((prev) => {
